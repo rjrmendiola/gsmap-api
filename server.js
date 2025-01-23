@@ -13,8 +13,8 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
-app.use('/api/barangays', barangayRoutes);
-app.use('/api/evacuationcenters', evacuationCenterRoutes);
+app.use('/barangays', barangayRoutes);
+app.use('/evacuationcenters', evacuationCenterRoutes);
 
 // Start the server
 app.listen(PORT, () => {
