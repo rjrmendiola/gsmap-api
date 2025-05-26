@@ -20,6 +20,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'BarangayOfficial',
+    timestamps: true
   });
   return BarangayOfficial;
 };

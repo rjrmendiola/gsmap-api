@@ -14,13 +14,13 @@ router.get('/', async (req, res) => {
 
 // Add a new barangay
 router.post('/', async (req, res) => {
-  const { name, captain_name } = req.body;
+  const { name, slug } = req.body;
   try {
     const [result] = await pool.query(
-      'INSERT INTO barangays (name, captain_name) VALUES (?, ?)',
-      [name, captain_name]
+      'INSERT INTO barangays (name, slug) VALUES (?, ?)',
+      [name, slug]
     );
-    res.status(201).json({ id: result.insertId, name, captain_name });
+    res.status(201).json({ id: result.insertId, name, slug });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -29,13 +29,13 @@ router.post('/', async (req, res) => {
 // Update a barangay
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, captain_name } = req.body;
+  const { name, slug } = req.body;
   try {
     await pool.query(
-      'UPDATE barangays SET name = ?, captain_name = ? WHERE id = ?',
-      [name, captain_name, id]
+      'UPDATE barangays SET name = ?, slug = ? WHERE id = ?',
+      [name, slug, id]
     );
-    res.json({ id, name, captain_name });
+    res.json({ id, name, slug });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
