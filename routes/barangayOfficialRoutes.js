@@ -2,14 +2,50 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const { BarangayOfficial } = require('../models');
+const { Op } = require('sequelize');
 
 // Get all barangay officials
 router.get('/', async (req, res) => {
   try {
     // const [rows] = await pool.query('SELECT * FROM barangayofficials');
     // res.json(rows);
-    const officials = await BarangayOfficial.findAll();
-    res.json(officials);
+
+    // const { search } = req.query;
+
+    const { search = '', page = 1, limit = 20 } = req.query;
+    const offset = (page - 1) * limit;
+
+    const where = {};
+
+    if (search) {
+      where[Op.or] = [
+        { name: { [Op.like]: `%${search}%` } },
+        { position: { [Op.like]: `%${search}%` } },
+        { barangay_name: { [Op.like]: `%${search}%` } },
+      ];
+    }
+
+    // const officials = await BarangayOfficial.findAll({
+    //   where,
+    //   order: [['createdAt', 'DESC']], // Newest first
+    //   limit: 20
+    // });
+    
+    // res.json(officials);
+
+    const { count, rows } = await BarangayOfficial.findAndCountAll({
+      where,
+      order: [['createdAt', 'DESC']],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+    });
+
+    res.json({
+      total: count,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      officials: rows,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
