@@ -1,12 +1,39 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const { EvacuationCenter } = require('../models');
+const { Op } = require('sequelize');
 
 // Get all evacuation centers
 router.get('/', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM evacuationcenters');
-    res.json(rows);
+    // const [rows] = await pool.query('SELECT * FROM evacuationcenters');
+    // res.json(rows);
+    const { search = '', page = 1, limit = 50 } = req.query;
+    const offset = (page - 1) * limit;
+
+    const where = {};
+
+    if (search) {
+      where[Op.or] = [
+        { name: { [Op.like]: `%${search}%` } },
+        { venue: { [Op.like]: `%${search}%` } }
+      ];
+    }
+
+    const { count, rows } = await EvacuationCenter.findAndCountAll({
+      where,
+      order: [['name', 'ASC'], ['createdAt', 'DESC']],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+    });
+
+    res.json({
+      total: count,
+      page: parseInt(page),
+      limit: parseInt(limit),
+      centers: rows,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
