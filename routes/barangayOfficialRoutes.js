@@ -21,7 +21,6 @@ router.get('/', async (req, res) => {
       where[Op.or] = [
         { name: { [Op.like]: `%${search}%` } },
         { position: { [Op.like]: `%${search}%` } },
-        { barangay_name: { [Op.like]: `%${search}%` } },
       ];
     }
 
@@ -35,7 +34,7 @@ router.get('/', async (req, res) => {
 
     const { count, rows } = await BarangayOfficial.findAndCountAll({
       where,
-      order: [['createdAt', 'DESC']],
+      order: [['name', 'ASC'], ['createdAt', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset),
     });
@@ -53,14 +52,14 @@ router.get('/', async (req, res) => {
 
 // Add a new barangay official
 router.post('/', async (req, res) => {
-  const { barangay_name, name, position } = req.body;
+  const { barangay_id, name, position } = req.body;
   try {
     // const [result] = await pool.query(
     //   'INSERT INTO barangayofficials (barangay_name, name, position) VALUES (?, ?, ?)',
     //   [barangay_name, name, position]
     // );
     // res.status(201).json({ id: result.insertId, barangay_name, name, position });
-    const official = await BarangayOfficial.create({ barangay_name, name, position });
+    const official = await BarangayOfficial.create({ barangay_id, name, position });
     res.status(201).json(official);
   } catch (err) {
     res.status(500).json({ error: err.message });
