@@ -3,14 +3,12 @@ const router = express.Router();
 const pool = require('../db');
 const { Barangay } = require('../models');
 const { Op } = require('sequelize');
+const slugify = require('slugify');
 
 // Get all barangays
 router.get('/', async (req, res) => {
   try {
-    console.log('teeeeest');
-    // const [rows] = await pool.query('SELECT * FROM barangays');
-    // res.json(rows);
-    const { search = '', page = 1, limit = 20 } = req.query;
+    const { search = '', page = 1, limit = 50 } = req.query;
     const offset = (page - 1) * limit;
 
     const where = {};
@@ -24,7 +22,7 @@ router.get('/', async (req, res) => {
 
     const { count, rows } = await Barangay.findAndCountAll({
       where,
-      order: [['createdAt', 'DESC']],
+      order: [['name', 'ASC'], ['createdAt', 'DESC']],
       limit: parseInt(limit),
       offset: parseInt(offset),
     });
@@ -42,43 +40,46 @@ router.get('/', async (req, res) => {
 });
 
 // Add a new barangay
-// router.post('/', async (req, res) => {
-//   const { name, slug } = req.body;
-//   try {
-//     const [result] = await pool.query(
-//       'INSERT INTO barangays (name, slug) VALUES (?, ?)',
-//       [name, slug]
-//     );
-//     res.status(201).json({ id: result.insertId, name, slug });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
+router.post('/', async (req, res) => {
+  const { name } = req.body;
+  try {
+    const slug = slugify(name, { lower: true, strict: true, replacement: '_' });
+    const barangay = await Barangay.create({ name, slug });
+    res.status(201).json(barangay);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
-// // Update a barangay
-// router.put('/:id', async (req, res) => {
-//   const { id } = req.params;
-//   const { name, slug } = req.body;
-//   try {
-//     await pool.query(
-//       'UPDATE barangays SET name = ?, slug = ? WHERE id = ?',
-//       [name, slug, id]
-//     );
-//     res.json({ id, name, slug });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
+// Update a barangay
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
+  try {
+    const barangay = await Barangay.findByPk(req.params.id);
+    if (!barangay) return res.status(404).json({ error: 'Not found' });
 
-// // Delete a barangay
-// router.delete('/:id', async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     await pool.query('DELETE FROM barangays WHERE id = ?', [id]);
-//     res.json({ message: 'Barangay deleted successfully', id });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// });
+    const slug = slugify(name, { lower: true, strict: true, replacement: '_' });
+
+    await barangay.update({ name, slug });
+    res.json(barangay);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete a barangay
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const barangay = await Barangay.findByPk(req.params.id);
+    if (!barangay) return res.status(404).json({ error: 'Not found' });
+
+    await barangay.destroy();
+    res.json({ message: 'Deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
