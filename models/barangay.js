@@ -22,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: 'barangay_id',
       as: 'evacuationCenters',
     });
+
+    Barangay.hasOne(models.HazardRiskAssessment, {
+      foreignKey: 'barangay_id',
+      as: 'hazardRisk'
+    });
   };
 
   return Barangay;
