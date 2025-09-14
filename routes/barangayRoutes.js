@@ -8,8 +8,7 @@ const slugify = require('slugify');
 // Get all barangays
 router.get('/', async (req, res) => {
   try {
-    const { search = '', page = 1, limit = 50 } = req.query;
-    const offset = (page - 1) * limit;
+    const { search = '', page = 1, limit = 50, all = false } = req.query;
 
     const where = {};
 
@@ -19,6 +18,18 @@ router.get('/', async (req, res) => {
         { slug: { [Op.like]: `%${search}%` } }
       ];
     }
+
+    if (all === 'true') {
+      // 👇 return all barangays without pagination
+      const barangays = await Barangay.findAll({
+        where,
+        order: [['name', 'ASC'], ['createdAt', 'DESC']],
+      });
+
+      return res.json(barangays);
+    }
+
+    const offset = (page - 1) * limit;
 
     const { count, rows } = await Barangay.findAndCountAll({
       where,
