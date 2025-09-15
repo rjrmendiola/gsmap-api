@@ -9,8 +9,7 @@ router.get('/', async (req, res) => {
   try {
     // const [rows] = await pool.query('SELECT * FROM evacuationcenters');
     // res.json(rows);
-    const { search = '', page = 1, limit = 50 } = req.query;
-    const offset = (page - 1) * limit;
+    const { search = '', page = 1, limit = 50, all = false } = req.query;
 
     const where = {};
 
@@ -20,6 +19,18 @@ router.get('/', async (req, res) => {
         { venue: { [Op.like]: `%${search}%` } }
       ];
     }
+
+    if (all === 'true') {
+      // return all evacuation centers without pagination
+      const evacuationCenters = await EvacuationCenter.findAll({
+        where,
+        order: [['name', 'ASC'], ['createdAt', 'DESC']],
+      });
+
+      return res.json(evacuationCenters);
+    }
+
+    const offset = (page - 1) * limit;
 
     const { count, rows } = await EvacuationCenter.findAndCountAll({
       where,

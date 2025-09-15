@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
     }
 
     if (all === 'true') {
-      // 👇 return all barangays without pagination
+      // return all barangays without pagination
       const barangays = await Barangay.findAll({
         where,
         order: [['name', 'ASC'], ['createdAt', 'DESC']],
