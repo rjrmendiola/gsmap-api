@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const { EvacuationCenter } = require('../models');
+const { EvacuationCenter, BarangayOfficial } = require('../models');
 const { Op } = require('sequelize');
 
 // Get all evacuation centers
@@ -23,6 +23,13 @@ router.get('/', async (req, res) => {
     if (all === 'true') {
       // return all evacuation centers without pagination
       const evacuationCenters = await EvacuationCenter.findAll({
+        inclide: [
+          {
+            model: BarangayOfficial,
+            as: 'official',
+            attributes: ['id', 'name', 'position'],
+          }
+        ],
         where,
         order: [['name', 'ASC'], ['createdAt', 'DESC']],
       });

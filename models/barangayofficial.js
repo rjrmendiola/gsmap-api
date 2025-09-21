@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     position: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
+    }
   }, {});
 
   BarangayOfficial.associate = function(models) {

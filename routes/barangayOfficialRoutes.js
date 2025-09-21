@@ -7,12 +7,7 @@ const { Op } = require('sequelize');
 // Get all barangay officials
 router.get('/', async (req, res) => {
   try {
-    // const [rows] = await pool.query('SELECT * FROM barangayofficials');
-    // res.json(rows);
-
-    // const { search } = req.query;
-
-    const { search = '', page = 1, limit = 20 } = req.query;
+    const { search = '', page = 1, limit = 20, all = false } = req.query;
     const offset = (page - 1) * limit;
 
     const where = {};
@@ -24,13 +19,15 @@ router.get('/', async (req, res) => {
       ];
     }
 
-    // const officials = await BarangayOfficial.findAll({
-    //   where,
-    //   order: [['createdAt', 'DESC']], // Newest first
-    //   limit: 20
-    // });
-    
-    // res.json(officials);
+    if (all === 'true') {
+      // return all barangay officials without pagination
+      const barangayofficials = await BarangayOfficial.findAll({
+        where,
+        order: [['name', 'ASC'], ['createdAt', 'DESC']],
+      });
+
+      return res.json(barangayofficials);
+    }
 
     const { count, rows } = await BarangayOfficial.findAndCountAll({
       where,
