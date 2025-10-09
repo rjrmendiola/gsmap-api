@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
     if (all === 'true') {
       // return all evacuation centers without pagination
       const evacuationCenters = await EvacuationCenter.findAll({
-        inclide: [
+        include: [
           {
             model: BarangayOfficial,
             as: 'official',
