@@ -9,10 +9,15 @@ module.exports = {
     const timestamp = new Date();
 
     for (const barangay of barangayData) {
+      var latitude = barangay.coordinates[0];
+      var longitude = barangay.coordinates[1];
+
       await Barangay.findOrCreate({
         where: { slug: barangay.slug },
         defaults: {
           name: barangay.name,
+          latitude: latitude,
+          longitude: longitude,
           createdAt: timestamp,
           updatedAt: timestamp
         }

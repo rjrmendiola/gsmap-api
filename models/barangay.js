@@ -10,6 +10,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
     },
+    latitude: DataTypes.DECIMAL(10, 7),
+    longitude: DataTypes.DECIMAL(10, 7),
   }, {});
 
   Barangay.associate = function(models) {

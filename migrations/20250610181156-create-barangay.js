@@ -18,6 +18,8 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
+      latitude: Sequelize.DECIMAL(10, 7),
+      longitude: Sequelize.DECIMAL(10, 7),
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE,
     });
