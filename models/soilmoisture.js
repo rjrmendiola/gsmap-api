@@ -28,13 +28,13 @@ module.exports = (sequelize, DataTypes) => {
     geojson: {
       type: DataTypes.JSON,
       allowNull: true,
-      get() {
-        const value = this.getDataValue('geojson');
-        return value ? JSON.parse(value) : null;
-      },
-      set(value) {
-        this.setDataValue('geojson', value ? JSON.stringify(value) : null);
-      }
+      // get() {
+      //   const value = this.getDataValue('geojson');
+      //   return value ? JSON.parse(value) : null;
+      // },
+      // set(value) {
+      //   this.setDataValue('geojson', value ? JSON.stringify(value) : null);
+      // }
     }
   }, {
     sequelize,

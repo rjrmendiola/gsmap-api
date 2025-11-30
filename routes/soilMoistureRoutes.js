@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { SoilMoisture } = require('../models');
 
-router.get('/', async (req, res) => {
+router.get('/geojson', async (req, res) => {
     try {
       const rows = await SoilMoisture.findAll();
 
