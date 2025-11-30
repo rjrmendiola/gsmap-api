@@ -89,8 +89,8 @@ module.exports = {
         // geojson: geometry,
         // geojson: parseGeometry(row['.geo']),
         geojson: parseGeometry(row['.geo']) ? JSON.stringify(parseGeometry(row['.geo'])) : null,
-        created_at: new Date(),
-        updated_at: new Date()
+        createdAt: new Date(),
+        updatedAt: new Date()
       });
     };
 
