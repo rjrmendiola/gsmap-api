@@ -10,6 +10,8 @@ const barangayOfficialRoutes = require('./routes/barangayOfficialRoutes');
 const evacuationCenterRoutes = require('./routes/evacuationCenterRoutes');
 const hazardRiskAssessmentRoutes = require('./routes/hazardRickAssessmentRoutes');
 const userRoutes = require('./routes/userRoutes');
+const slopeRoutes = require('./routes/slopeRoutes');
+const soilMoistureRoutes = require('./routes/soilMoistureRoutes');
 
 dotenv.config();
 
@@ -29,7 +31,9 @@ app.use(bodyParser.json());
 app.use('/api/barangays', barangayRoutes);
 app.use('/api/barangayofficials', barangayOfficialRoutes);
 app.use('/api/evacuationcenters', evacuationCenterRoutes);
-app.use('/api/hazardRiskAssessments', hazardRiskAssessmentRoutes);
+app.use('/api/hazardriskAssessments', hazardRiskAssessmentRoutes);
+app.use('/api/slopes', slopeRoutes);
+app.use('/api/soilmoistures', soilMoistureRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
 
