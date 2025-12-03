@@ -4,45 +4,8 @@ const fs = require('fs');
 const Papa = require('papaparse');
 // const wellknown = require('wellknown');
 const slugify = require('slugify');
-const { parseGeometry, safeParseGeo } = require('../helpers/geometry');
+const { parseGeometry, deepValidateCoords } = require('../helpers/geometry');
 const { parse } = require('path');
-
-/**
- * Recursively convert all coordinates to numbers
- */
-// function deepValidateCoords(coords) {
-//   if (!Array.isArray(coords)) return coords;
-
-//   if (typeof coords[0] === 'number') {
-//     return coords.map(Number); // [lng, lat]
-//   } else {
-//     return coords.map(deepValidateCoords);
-//   }
-// }
-
-/**
- * Parse raw geometry (GeoJSON string or WKT) into valid GeoJSON
- */
-// function parseGeometry(raw) {
-//   if (!raw || raw.trim() === '' || raw === 'None' || raw === 'null') return null;
-
-//   // Already an object → return
-//   if (typeof raw === 'object') return raw;
-
-//   try {
-//     let geometry = raw.trim().startsWith('{') ? JSON.parse(raw) : wellknown(raw);
-
-//     if (!geometry || !geometry.type || !geometry.coordinates) return null;
-
-//     geometry.coordinates = deepValidateCoords(geometry.coordinates);
-
-//     return geometry;
-//   } catch (err) {
-//     console.warn('Invalid geometry:', raw);
-//     return null;
-//   }
-// }
-
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -50,7 +13,7 @@ module.exports = {
     const file = fs.readFileSync('./data/slopes_2025.csv', 'utf8');
     const parsed = Papa.parse(file, { header: true, skipEmptyLines: true });
 
-    const { Barangay } = require('../models');
+    const { Barangay, Slope } = require('../models');
 
     const rows = [];
 
@@ -74,6 +37,9 @@ module.exports = {
         continue;
       }
 
+      const geometry = parseGeometry(row['.geo']); // returns JS object or null
+      if (geometry) geometry.coordinates = deepValidateCoords(geometry.coordinates);
+
       rows.push({
         barangay_id: barangay.id,
         name: row.name,
@@ -91,18 +57,26 @@ module.exports = {
         wikidata: row.wikidata,
         ref: row.ref,
         old_ref: row.old_ref,
-        // geojson: geometry,
-        geojson: JSON.stringify(parseGeometry(row['.geo'])),
+        geojson: geometry,
+        // geojson: JSON.stringify(parseGeometry(row['.geo'])),
+        // geojson: parseGeometry(row['.geo']),
         created_at: new Date(),
         updated_at: new Date()
       });
-    };
+    }
 
-    if (rows.length > 0) {
-      await queryInterface.bulkInsert('Slopes', rows);
-      // console.log(`Inserted ${rows.length} Slope records`);
-    } else {
-      console.warn('No valid Slope records to insert');
+    // if (rows.length > 0) {
+    //   await queryInterface.bulkInsert('Slopes', rows);
+    //   // console.log(`Inserted ${rows.length} Slope records`);
+    // } else {
+    //   console.warn('No valid Slope records to insert');
+    // }
+
+    // chunk to avoid huge single call
+    const chunkSize = 200;
+    for (let i = 0; i < rows.length; i += chunkSize) {
+      const chunk = rows.slice(i, i + chunkSize);
+      await Slope.bulkCreate(chunk, { validate: true }); // uses model; serializes JSON properly
     }
   },
 

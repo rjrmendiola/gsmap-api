@@ -39,4 +39,12 @@ router.get('/geojson', async (req, res) => {
     }
 });
 
+router.get('/debug/slope', async (req, res) => {
+  const one = await Slope.findOne();
+  res.json({
+    raw: one.geojson,
+    typeof: typeof one.geojson
+  });
+});
+
 module.exports = router;

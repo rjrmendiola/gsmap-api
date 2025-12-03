@@ -4,40 +4,7 @@ const fs = require('fs');
 const Papa = require('papaparse');
 // const wellknown = require('wellknown');
 const slugify = require('slugify');
-const { parseGeometry, safeParseGeo } = require('../helpers/geometry');
-
-/**
- * Recursively convert all coordinates to numbers
- */
-// function deepValidateCoords(coords) {
-//   if (!Array.isArray(coords)) return coords;
-
-//   if (typeof coords[0] === 'number') {
-//     return coords.map(Number); // [lng, lat]
-//   } else {
-//     return coords.map(deepValidateCoords);
-//   }
-// }
-
-/**
- * Parse raw geometry (GeoJSON string or WKT) into valid GeoJSON
- */
-// function parseGeometry(raw) {
-//   if (!raw || raw.trim() === '' || raw === 'None' || raw === 'null') return null;
-
-//   try {
-//     let geometry = raw.trim().startsWith('{') ? JSON.parse(raw) : wellknown(raw);
-
-//     if (!geometry || !geometry.type || !geometry.coordinates) return null;
-
-//     geometry.coordinates = deepValidateCoords(geometry.coordinates);
-
-//     return geometry;
-//   } catch (err) {
-//     console.warn('Invalid geometry:', raw);
-//     return null;
-//   }
-// }
+const { parseGeometry, deepValidateCoords } = require('../helpers/geometry');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -45,7 +12,7 @@ module.exports = {
     const file = fs.readFileSync('./data/soil_moistures_2025.csv', 'utf8');
     const parsed = Papa.parse(file, { header: true, skipEmptyLines: true });
 
-    const { Barangay } = require('../models');
+    const { Barangay, SoilMoisture } = require('../models');
 
     const rows = [];
 
@@ -64,6 +31,9 @@ module.exports = {
         console.warn(`Barangay not found for slug: ${barangaySlug}`);
         continue; // skip this row
       }
+
+      const geometry = parseGeometry(row['.geo']); // returns JS object or null
+      if (geometry) geometry.coordinates = deepValidateCoords(geometry.coordinates);
 
       rows.push({
         barangay_id: barangay.id,
@@ -86,11 +56,18 @@ module.exports = {
       });
     }
 
-    if (rows.length > 0) {
-      await queryInterface.bulkInsert('SoilMoistures', rows);
-      // console.log(`Inserted ${rows.length} SoilMoisture records`);
-    } else {
-      console.warn('No valid SoilMoisture records to insert');
+    // if (rows.length > 0) {
+    //   await queryInterface.bulkInsert('SoilMoistures', rows);
+    //   // console.log(`Inserted ${rows.length} SoilMoisture records`);
+    // } else {
+    //   console.warn('No valid SoilMoisture records to insert');
+    // }
+
+    // chunk to avoid huge single call
+    const chunkSize = 200;
+    for (let i = 0; i < rows.length; i += chunkSize) {
+      const chunk = rows.slice(i, i + chunkSize);
+      await SoilMoisture.bulkCreate(chunk, { validate: true }); // uses model; serializes JSON properly
     }
   },
 

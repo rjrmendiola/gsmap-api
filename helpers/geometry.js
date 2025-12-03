@@ -21,6 +21,19 @@ function safeParseGeo(jsonString) {
   }
 }
 
+/**
+ * Recursively convert all coordinates to numbers
+ */
+function deepValidateCoords(coords) {
+  if (!Array.isArray(coords)) return coords;
+
+  if (typeof coords[0] === 'number') {
+    return coords.map(Number); // [lng, lat]
+  } else {
+    return coords.map(deepValidateCoords);
+  }
+}
+
 
 /**
  * Safely parse GeoJSON or WKT.
@@ -56,4 +69,4 @@ function parseGeometry(raw) {
   return null;
 }
 
-module.exports = { parseGeometry, safeParseGeo };
+module.exports = { parseGeometry, safeParseGeo, deepValidateCoords };
