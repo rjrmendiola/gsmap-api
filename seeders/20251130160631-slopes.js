@@ -2,41 +2,46 @@
 
 const fs = require('fs');
 const Papa = require('papaparse');
-const wellknown = require('wellknown');
+// const wellknown = require('wellknown');
 const slugify = require('slugify');
+const { parseGeometry, safeParseGeo } = require('../helpers/geometry');
+const { parse } = require('path');
 
 /**
  * Recursively convert all coordinates to numbers
  */
-function deepValidateCoords(coords) {
-  if (!Array.isArray(coords)) return coords;
+// function deepValidateCoords(coords) {
+//   if (!Array.isArray(coords)) return coords;
 
-  if (typeof coords[0] === 'number') {
-    return coords.map(Number); // [lng, lat]
-  } else {
-    return coords.map(deepValidateCoords);
-  }
-}
+//   if (typeof coords[0] === 'number') {
+//     return coords.map(Number); // [lng, lat]
+//   } else {
+//     return coords.map(deepValidateCoords);
+//   }
+// }
 
 /**
  * Parse raw geometry (GeoJSON string or WKT) into valid GeoJSON
  */
-function parseGeometry(raw) {
-  if (!raw || raw.trim() === '' || raw === 'None' || raw === 'null') return null;
+// function parseGeometry(raw) {
+//   if (!raw || raw.trim() === '' || raw === 'None' || raw === 'null') return null;
 
-  try {
-    let geometry = raw.trim().startsWith('{') ? JSON.parse(raw) : wellknown(raw);
+//   // Already an object → return
+//   if (typeof raw === 'object') return raw;
 
-    if (!geometry || !geometry.type || !geometry.coordinates) return null;
+//   try {
+//     let geometry = raw.trim().startsWith('{') ? JSON.parse(raw) : wellknown(raw);
 
-    geometry.coordinates = deepValidateCoords(geometry.coordinates);
+//     if (!geometry || !geometry.type || !geometry.coordinates) return null;
 
-    return geometry;
-  } catch (err) {
-    console.warn('Invalid geometry:', raw);
-    return null;
-  }
-}
+//     geometry.coordinates = deepValidateCoords(geometry.coordinates);
+
+//     return geometry;
+//   } catch (err) {
+//     console.warn('Invalid geometry:', raw);
+//     return null;
+//   }
+// }
 
 
 /** @type {import('sequelize-cli').Migration} */
@@ -87,10 +92,9 @@ module.exports = {
         ref: row.ref,
         old_ref: row.old_ref,
         // geojson: geometry,
-        // geojson: parseGeometry(row['.geo']),
-        geojson: parseGeometry(row['.geo']) ? JSON.stringify(parseGeometry(row['.geo'])) : null,
-        createdAt: new Date(),
-        updatedAt: new Date()
+        geojson: JSON.stringify(parseGeometry(row['.geo'])),
+        created_at: new Date(),
+        updated_at: new Date()
       });
     };
 

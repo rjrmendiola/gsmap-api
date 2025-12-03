@@ -25,10 +25,12 @@ module.exports = {
       short_name: { type: Sequelize.STRING },
       admin_leve: { type: Sequelize.STRING },
       boundary: { type: Sequelize.STRING },
+
       mean: { type: Sequelize.FLOAT },
       mean_norm: { type: Sequelize.FLOAT },
       population: { type: Sequelize.INTEGER },
       population_source: { type: Sequelize.STRING },
+
       type: { type: Sequelize.STRING },
       wikidata: { type: Sequelize.STRING },
       ref: { type: Sequelize.INTEGER },
@@ -39,12 +41,12 @@ module.exports = {
         allowNull: true
       },
 
-      createdAt: {
+      created_at: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-      updatedAt: {
+      updated_at: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')

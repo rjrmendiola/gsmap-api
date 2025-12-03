@@ -1,5 +1,6 @@
 'use strict';
 const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class SoilMoisture extends Model {
     static associate(models) {
@@ -25,20 +26,12 @@ module.exports = (sequelize, DataTypes) => {
     wikidata: DataTypes.STRING,
     ref: DataTypes.INTEGER,
     old_ref: DataTypes.STRING,
-    geojson: {
-      type: DataTypes.JSON,
-      allowNull: true,
-      // get() {
-      //   const value = this.getDataValue('geojson');
-      //   return value ? JSON.parse(value) : null;
-      // },
-      // set(value) {
-      //   this.setDataValue('geojson', value ? JSON.stringify(value) : null);
-      // }
-    }
+    geojson: DataTypes.JSON,
   }, {
     sequelize,
     modelName: 'SoilMoisture',
+    tableName: 'SoilMoistures',
+    underscored: true,
   });
 
   return SoilMoisture;
