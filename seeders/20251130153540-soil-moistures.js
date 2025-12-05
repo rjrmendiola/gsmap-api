@@ -32,8 +32,27 @@ module.exports = {
         continue; // skip this row
       }
 
-      const geometry = parseGeometry(row['.geo']); // returns JS object or null
-      if (geometry) geometry.coordinates = deepValidateCoords(geometry.coordinates);
+      // const geometry = parseGeometry(row['.geo']); // returns JS object or null
+      // if (geometry) geometry.coordinates = deepValidateCoords(geometry.coordinates);
+
+      // --- FIX START ---
+      let geometry = row['.geo'];
+
+      try {
+        // Case: Already valid JSON string
+        let parsed = JSON.parse(geometry);
+
+        // Case: CSV had a double string → parse again
+        if (typeof parsed === 'string') {
+          parsed = JSON.parse(parsed);
+        }
+
+        geometry = parsed;
+      } catch (e) {
+        // Case: It’s a raw WKT or custom -> pass to your converter
+        geometry = parseGeometry(geometry);
+      }
+      // --- FIX END ---
 
       rows.push({
         barangay_id: barangay.id,
@@ -50,7 +69,7 @@ module.exports = {
         wikidata: row.wikidata,
         ref: row.ref ? parseInt(row.ref) : null,
         old_ref: row.old_ref,
-        geojson: JSON.stringify(parseGeometry(row['.geo'])),
+        geojson: geometry,
         created_at: new Date(),
         updated_at: new Date()
       });
