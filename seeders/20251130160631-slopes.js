@@ -44,12 +44,13 @@ module.exports = {
       let geometry = row['.geo'];
 
       try {
-        // Case: Already valid JSON string
-        let parsed = JSON.parse(geometry);
+        if (!geometry) return null;
+
+        if (typeof geometry === 'object') return geometry;
 
         // Case: CSV had a double string → parse again
-        if (typeof parsed === 'string') {
-          parsed = JSON.parse(parsed);
+        if (typeof geometry === 'string') {
+          parsed = JSON.parse(geometry);
         }
 
         geometry = parsed;
