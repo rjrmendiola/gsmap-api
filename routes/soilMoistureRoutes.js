@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { SoilMoisture } = require('../models');
-const { getSoilMoistureGeoJSON, getBaselines } = require('../controllers/soilMoistureController');
+const { getSoilMoistureGeoJSON, getBaselines } = require('../controllers/soil-moisture.controller');
 
 // router.get('/geojson', async (req, res) => {
 //     try {

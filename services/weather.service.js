@@ -8,7 +8,7 @@ async function getAllBarangayWeather() {
 
   for (const b of barangays) {
     if (await cache.isFresh(b.id)) {
-      const snap = await cache.get(b.id);
+      const snap = await cache.getSnapshot(b.id);
       result[b.name] = snap.payload;
       continue;
     }

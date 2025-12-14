@@ -12,8 +12,9 @@ module.exports = (sequelize, DataTypes) => {
   }
   WeatherSnapshot.init({
     barangay_id: DataTypes.INTEGER,
-    weather_json: DataTypes.JSON,
-    fetched_at: DataTypes.DATE
+    payload: DataTypes.JSON,
+    fetched_at: DataTypes.DATE,
+    source: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'WeatherSnapshot',

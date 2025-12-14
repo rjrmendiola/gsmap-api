@@ -3,7 +3,7 @@ const dayjs = require('dayjs');
 
 async function getFetchIntervalMinutes() {
   const row = await SystemSetting.findOne({
-    where: { key: 'weather_fetch_interval_minutes' }
+    where: { name: 'weather_fetch_interval_minutes' }
   });
   return row ? Number(row.value) : 60;
 }
