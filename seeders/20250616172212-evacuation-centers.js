@@ -28,7 +28,7 @@ module.exports = {
         continue;
       }
 
-      await queryInterface.bulkInsert('EvacuationCenters', [{
+      await queryInterface.bulkInsert('evacuation_centers', [{
         name: entry.name,
         barangay_id: barangay.id,
         barangay_official_id: official.id,
@@ -36,15 +36,15 @@ module.exports = {
         longitude: entry.longitude,
         venue: entry.venue,
         image: entry.image,
-        createdAt: timestamp,
-        updatedAt: timestamp
+        // created_at: timestamp,
+        // updated_at: timestamp
       }]);
     }
   },
 
   async down (queryInterface, Sequelize) {
     const names = centersData.map(c => c.name);
-    await queryInterface.bulkDelete('EvacuationCenters', {
+    await queryInterface.bulkDelete('evacuation_centers', {
       name: names
     });
   }

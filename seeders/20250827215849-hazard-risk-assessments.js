@@ -67,7 +67,7 @@ module.exports = {
       var latitude = entry.coordinates[0];
       var longitude = entry.coordinates[1];
 
-      await queryInterface.bulkInsert('HazardRiskAssessments', [{
+      await queryInterface.bulkInsert('hazard_risk_assessments', [{
         barangay_id: barangay.id,
         latitude: latitude,
         longitude: longitude,
@@ -77,15 +77,15 @@ module.exports = {
         landslide_level: landslideLevel,
         remarks: JSON.stringify(remarks),
         recommendations: JSON.stringify(entry.recommendation),
-        createdAt: timestamp,
-        updatedAt: timestamp
+        // created_at: timestamp,
+        // updated_at: timestamp
       }]);
     }
   },
 
   async down (queryInterface, Sequelize) {
     const names = hazardRiskAssessmentData.map(c => c.name);
-    await queryInterface.bulkDelete('HazardRiskAssessments', {
+    await queryInterface.bulkDelete('hazard_risk_assessments', {
       name: names
     });
   }

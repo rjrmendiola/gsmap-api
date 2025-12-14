@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'SoilMoisture',
-    tableName: 'SoilMoistures',
+    tableName: 'soil_moistures',
     underscored: true,
   });
 

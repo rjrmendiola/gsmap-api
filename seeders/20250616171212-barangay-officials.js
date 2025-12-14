@@ -14,12 +14,12 @@ module.exports = {
       });
 
       if (barangay) {
-        await queryInterface.bulkInsert('BarangayOfficials', [{
+        await queryInterface.bulkInsert('barangay_officials', [{
           barangay_id: barangay.id,
           name: entry.name,
           position: entry.position,
-          createdAt: timestamp,
-          updatedAt: timestamp
+          // created_at: timestamp,
+          // updated_at: timestamp
         }]);
       } else {
         console.warn(`Barangay with slug "${entry.barangay_slug}" not found. Skipping entry.`);
@@ -35,7 +35,7 @@ module.exports = {
       const barangay = await Barangay.findOne({ where: { slug } });
 
       if (barangay) {
-        await queryInterface.bulkDelete('BarangayOfficials', {
+        await queryInterface.bulkDelete('barangay_officials', {
           barangay_id: barangay.id
         });
       }

@@ -12,7 +12,9 @@ const hazardRiskAssessmentRoutes = require('./routes/hazardRickAssessmentRoutes'
 const userRoutes = require('./routes/userRoutes');
 const slopeRoutes = require('./routes/slopeRoutes');
 const soilMoistureRoutes = require('./routes/soilMoistureRoutes');
-const weatherSettingRoutes = require('./routes/weatherSettingRoutes');
+// const barangayWeatherRoutes = require('./routes/barangayWeatherRoutes');
+
+const weatherRoutes = require('./routes/weather.routes');
 
 dotenv.config();
 
@@ -37,7 +39,9 @@ app.use('/api/slopes', slopeRoutes);
 app.use('/api/soilmoistures', soilMoistureRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/weathersettings', weatherSettingRoutes);
+// app.use('/api/barangayweathers', barangayWeatherRoutes);
+
+app.use('/api/weather', weatherRoutes);
 
 // Start the server
 app.listen(PORT, () => {

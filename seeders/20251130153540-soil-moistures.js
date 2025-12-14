@@ -70,13 +70,13 @@ module.exports = {
         ref: row.ref ? parseInt(row.ref) : null,
         old_ref: row.old_ref,
         geojson: geometry,
-        created_at: new Date(),
-        updated_at: new Date()
+        // created_at: new Date(),
+        // updated_at: new Date()
       });
     }
 
     // if (rows.length > 0) {
-    //   await queryInterface.bulkInsert('SoilMoistures', rows);
+    //   await queryInterface.bulkInsert('soil_moistures', rows);
     //   // console.log(`Inserted ${rows.length} SoilMoisture records`);
     // } else {
     //   console.warn('No valid SoilMoisture records to insert');
@@ -91,6 +91,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('SoilMoistures', null, {});
+    await queryInterface.bulkDelete('soil_moistures', null, {});
   }
 };

@@ -78,8 +78,8 @@ module.exports = {
         ref: row.ref,
         old_ref: row.old_ref,
         geojson: geometry,
-        created_at: new Date(),
-        updated_at: new Date()
+        // created_at: new Date(),
+        // updated_at: new Date()
       });
     }
 
@@ -99,6 +99,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('Slopes', null, {});
+    await queryInterface.bulkDelete('slopes', null, {});
   }
 };

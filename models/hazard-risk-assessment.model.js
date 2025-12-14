@@ -1,5 +1,6 @@
 'use strict';
 const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class HazardRiskAssessment extends Model {
     static associate(models) {
@@ -23,6 +24,8 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'HazardRiskAssessment',
+    tableName: 'hazard_risk_assessments',
+    underscored: true,
   });
 
   return HazardRiskAssessment;

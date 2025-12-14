@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('HazardRiskAssessments', {
+    await queryInterface.createTable('hazard_risk_assessments', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,7 +13,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Barangays',   // assumes your table is named 'Barangays'
+          model: 'barangays',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -43,17 +43,19 @@ module.exports = {
       recommendations: {
         type: Sequelize.JSON
       },
-      createdAt: {
+      created_at: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
-      updatedAt: {
+      updated_at: {
+        type: Sequelize.DATE,
         allowNull: false,
-        type: Sequelize.DATE
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('HazardRiskAssessments');
+    await queryInterface.dropTable('hazard_risk_assessments');
   }
 };

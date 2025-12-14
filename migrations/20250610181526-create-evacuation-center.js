@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('EvacuationCenters', {
+    await queryInterface.createTable('evacuation_centers', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -17,7 +17,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Barangays',
+          model: 'barangays',
           key: 'id',
         },
         onUpdate: 'CASCADE',
@@ -27,7 +27,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'BarangayOfficials',
+          model: 'barangay_officials',
           key: 'id',
         },
         onUpdate: 'CASCADE',
@@ -37,12 +37,20 @@ module.exports = {
       longitude: Sequelize.DECIMAL(10, 7),
       venue: Sequelize.STRING,
       image: Sequelize.STRING,
-      createdAt: Sequelize.DATE,
-      updatedAt: Sequelize.DATE,
+      created_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      updated_at: {
+        type: Sequelize.DATE,
+        allowNull: false,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')
+      }
     });
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('EvacuationCenters');
+    await queryInterface.dropTable('evacuation_centers');
   }
 };

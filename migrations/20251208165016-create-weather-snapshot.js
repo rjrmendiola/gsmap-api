@@ -1,31 +1,36 @@
 'use strict';
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('barangay_officials', {
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('weather_snapshots', {
       id: {
-        type: Sequelize.INTEGER,
+        allowNull: false,
         autoIncrement: true,
         primaryKey: true,
+        type: Sequelize.INTEGER
       },
       barangay_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
           model: 'barangays',
-          key: 'id',
+          key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'CASCADE',
+        onDelete: 'CASCADE'
       },
-      name: {
+      payload: {
+        type: Sequelize.JSON,
+        allowNull: false
+      },
+      fetched_at: { 
+        type: Sequelize.DATE, 
+        allowNull: false 
+      },
+      source: {
         type: Sequelize.STRING,
         allowNull: false,
-      },
-      position: {
-        type: Sequelize.STRING,
-        allowNull: false,
+        defaultValue: 'open-meteo'
       },
       created_at: {
         type: Sequelize.DATE,
@@ -39,8 +44,7 @@ module.exports = {
       }
     });
   },
-
-  async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('barangay_officials');
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable('weather_snapshots');
   }
 };

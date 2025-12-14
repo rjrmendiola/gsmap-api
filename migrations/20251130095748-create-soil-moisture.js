@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('SoilMoistures', {
+    await queryInterface.createTable('soil_moistures', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -14,7 +14,7 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'Barangays',   // assumes your table is named 'Barangays'
+          model: 'barangays',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -55,7 +55,7 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('SoilMoistures');
+    await queryInterface.dropTable('soil_moistures');
   }
 };
 

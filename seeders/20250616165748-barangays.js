@@ -18,8 +18,8 @@ module.exports = {
           name: barangay.name,
           latitude: latitude,
           longitude: longitude,
-          createdAt: timestamp,
-          updatedAt: timestamp
+          // created_at: timestamp,
+          // updated_at: timestamp
         }
       });
     }
@@ -27,7 +27,7 @@ module.exports = {
 
   async down (queryInterface, Sequelize) {
     const slugs = barangayData.map(b => b.slug);
-    await queryInterface.bulkDelete('Barangays', {
+    await queryInterface.bulkDelete('barangays', {
       slug: slugs
     });
   }

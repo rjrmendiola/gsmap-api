@@ -31,7 +31,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Slope',
-    tableName: 'Slopes',
+    tableName: 'slopes',
     underscored: true,
   });
   return Slope;
