@@ -28,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'barangay_id',
         as: 'slope'
       });
+
+      Barangay.hasOne(models.BarangayProfile, {
+        foreignKey: 'barangay_id',
+        as: 'barangayProfile'
+      });
     }
   }
   Barangay.init({

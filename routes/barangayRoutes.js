@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const { Barangay } = require('../models');
+const { Barangay, BarangayProfile } = require('../models');
 const { Op } = require('sequelize');
 const slugify = require('slugify');
 
@@ -22,6 +22,13 @@ router.get('/', async (req, res) => {
     if (all === 'true') {
       // return all barangays without pagination
       const barangays = await Barangay.findAll({
+        include: [
+          {
+            model: BarangayProfile,
+            as: 'barangayProfile',
+            attributes: ['area', 'population_density', 'livelihood'],
+          }
+        ],
         where,
         order: [['name', 'ASC'], ['createdAt', 'DESC']],
       });
