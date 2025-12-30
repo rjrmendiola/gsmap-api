@@ -5,6 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class BarangayProfile extends Model {
     static associate(models) {
+      // a barangay profile belongs to a barangay
       BarangayProfile.belongsTo(models.Barangay, {
         foreignKey: 'barangay_id',
         as: 'barangay'

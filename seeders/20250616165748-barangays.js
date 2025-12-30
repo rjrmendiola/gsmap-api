@@ -1,6 +1,7 @@
 'use strict';
 
 const barangayData = require('../data/barangays.json');
+const municipality = require('../models/municipality');
 
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
@@ -18,6 +19,7 @@ module.exports = {
           name: barangay.name,
           latitude: latitude,
           longitude: longitude,
+          municipality_id: null,
           // created_at: timestamp,
           // updated_at: timestamp
         }

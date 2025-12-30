@@ -4,6 +4,7 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Slope extends Model {
     static associate(models) {
+      // a slope belongs to a barangay
       Slope.belongsTo(models.Barangay, {
         foreignKey: 'barangay_id',
         as: 'barangay'
