@@ -1,6 +1,6 @@
 const multer = require('multer');
 
-const barangayUpload = multer({
+const dataUpload = multer({
   storage: multer.memoryStorage(), // store file in memory only
   limits: {
     fileSize: 10 * 1024 * 1024 // 10MB
@@ -21,5 +21,5 @@ const barangayUpload = multer({
 });
 
 module.exports = {
-  barangayUpload
+  dataUpload
 };

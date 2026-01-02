@@ -5,7 +5,7 @@ const { Barangay, BarangayProfile } = require('../models');
 const { Op } = require('sequelize');
 const slugify = require('slugify');
 const multer = require('multer');
-const { barangayUpload } = require('../config/multer.config');
+const { dataUpload } = require('../config/multer.config');
 const { importBarangayData } = require('../controllers/barangay.controller');
 
 // Get all barangays
@@ -103,6 +103,6 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-router.post('/import', barangayUpload.single('file'), importBarangayData);
+router.post('/import', dataUpload.single('file'), importBarangayData);
 
 module.exports = router;

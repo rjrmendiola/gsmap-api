@@ -3,6 +3,8 @@ const router = express.Router();
 const pool = require('../db');
 const { BarangayOfficial } = require('../models');
 const { Op } = require('sequelize');
+const { dataUpload } = require('../config/multer.config');
+const { importBarangayOfficialData } = require('../controllers/barangay-official.controller');
 
 // Get all barangay officials
 router.get('/', async (req, res) => {
@@ -98,5 +100,7 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+router.post('/import', dataUpload.single('file'), importBarangayOfficialData);
 
 module.exports = router;

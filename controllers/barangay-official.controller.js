@@ -1,17 +1,14 @@
 const db = require('../models');
-const { Barangay, Municipality } = require('../models');
+const { Barangay, BarangayOfficial } = require('../models');
 const slugify = require('../utils/slugifier.utils');
 const importParser = require('../services/import-parser.service');
 
-const REQUIRED_FIELDS = ['name', 'latitude', 'longitude'];
+const REQUIRED_FIELDS = ['name', 'position', 'barangay'];
 
-// For Future Update: Dynamically get municipality ID
+// TODO: Dynamically get municipality ID
 const MUNICIPALITY_ID = 1;
 
-async function importBarangayData(req, res) {
-    // const municipality = await Municipality.findOne({ where: { name: 'Carigara' } });
-    // const MUNICIPALITY_ID = municipality.id;
-
+async function importBarangayOfficialData(req, res) {
     if (!db || !db.sequelize) {
       throw new Error('Sequelize not initialized correctly');
     }
@@ -40,6 +37,15 @@ async function importBarangayData(req, res) {
         const success = [];
         const failed = [];
 
+        const barangays = await Barangay.findAll({
+          attributes: ['id', 'name']
+        });
+
+        const barangayMap = new Map(
+            barangays.map(b => [b.name.toLowerCase(), b])
+        );
+
+
         rows.forEach((row, index) => {
             const missing = REQUIRED_FIELDS.filter(f => !row[f]);
 
@@ -53,13 +59,13 @@ async function importBarangayData(req, res) {
                 return;
             }
 
-            const latitude = parseFloat(row.latitude);
-            const longitude = parseFloat(row.longitude);
+            let barangayName = row.barangay.trim();
+            const barangay = barangayMap.get(barangayName.toLowerCase());
 
-            if (isNaN(latitude) || isNaN(longitude)) {
+            if (!barangay) {
                 failed.push({
                     row: index + 2,
-                    reason: 'Invalid latitude or longitude',
+                    reason: `Barangay not found: ${barangayName}`,
                     data: row
                 });
 
@@ -70,10 +76,8 @@ async function importBarangayData(req, res) {
                 row: index + 2,
                 data: {
                     name: row.name,
-                    latitude,
-                    longitude,
-                    slug: slugify(row.name),
-                    municipality_id: MUNICIPALITY_ID
+                    position: row.position,
+                    barangay_id: barangay.id
                 }
             });
         });
@@ -82,7 +86,7 @@ async function importBarangayData(req, res) {
             DATABASE INSERT
         ========================= */
         if (success.length) {
-            await db.Barangay.bulkCreate(
+            await db.BarangayOfficial.bulkCreate(
                 success.map(s => s.data),
                 {
                     transaction,
@@ -94,7 +98,7 @@ async function importBarangayData(req, res) {
         await transaction.commit();
 
         res.json({
-            message: 'Barangay import completed',
+            message: 'Barangay official import completed',
             summary: {
                 total: rows.length,
                 inserted: success.length,
@@ -114,4 +118,4 @@ async function importBarangayData(req, res) {
     }
 }
 
-module.exports = { importBarangayData };
+module.exports = { importBarangayOfficialData };
