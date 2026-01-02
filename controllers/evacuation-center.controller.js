@@ -1,13 +1,14 @@
 const db = require('../models');
-const { Barangay } = require('../models');
+const { Barangay, BarangayOfficial } = require('../models');
 const importParser = require('../services/import-parser.service');
 
-const REQUIRED_FIELDS = ['name', 'position', 'barangay'];
+const REQUIRED_FIELDS = ['name', 'barangay', 'latitude', 'longitude', 'venue'];
 
 // TODO: Dynamically get municipality ID
 const MUNICIPALITY_ID = 1;
 
-async function importBarangayOfficialData(req, res) {
+async function importEvacuationCenterData(req, res) {
+
     if (!db || !db.sequelize) {
       throw new Error('Sequelize not initialized correctly');
     }
@@ -37,11 +38,19 @@ async function importBarangayOfficialData(req, res) {
         const failed = [];
 
         const barangays = await Barangay.findAll({
-          attributes: ['id', 'name']
+            attributes: ['id', 'name']
         });
 
         const barangayMap = new Map(
             barangays.map(b => [b.name.toLowerCase(), b])
+        );
+
+        const barangayOfficials = await BarangayOfficial.findAll({
+            attributes: ['id', 'barangay_id']
+        });
+
+        const barangayOfficialByBarangayId = new Map(
+            barangayOfficials.map(o => [o.barangay_id, o.id])
         );
 
         rows.forEach((row, index) => {
@@ -51,6 +60,19 @@ async function importBarangayOfficialData(req, res) {
                 failed.push({
                     row: index + 2,
                     reason: `Missing fields: ${missing.join(', ')}`,
+                    data: row
+                });
+
+                return;
+            }
+
+            const latitude = parseFloat(row.latitude);
+            const longitude = parseFloat(row.longitude);
+
+            if (isNaN(latitude) || isNaN(longitude)) {
+                failed.push({
+                    row: index + 2,
+                    reason: 'Invalid latitude or longitude',
                     data: row
                 });
 
@@ -70,12 +92,26 @@ async function importBarangayOfficialData(req, res) {
                 return;
             }
 
+            const officialid = barangayOfficialByBarangayId.get(barangay.id);
+
+            if (!officialid) {
+                failed.push({
+                    row: index + 2,
+                    reason: `Barangay official not found for barangay: ${barangayName}`,
+                    data: row
+                });
+                return;
+            }
+
             success.push({
                 row: index + 2,
                 data: {
                     name: row.name,
-                    position: row.position,
-                    barangay_id: barangay.id
+                    latitude,
+                    longitude,
+                    barangay_id: barangay.id,
+                    barangay_official_id: officialid,
+                    venue: row.venue
                 }
             });
         });
@@ -84,7 +120,7 @@ async function importBarangayOfficialData(req, res) {
             DATABASE INSERT
         ========================= */
         if (success.length) {
-            await db.BarangayOfficial.bulkCreate(
+            await db.EvacuationCenter.bulkCreate(
                 success.map(s => s.data),
                 {
                     transaction,
@@ -96,7 +132,7 @@ async function importBarangayOfficialData(req, res) {
         await transaction.commit();
 
         res.json({
-            message: 'Barangay official import completed',
+            message: 'Evacuation center import completed',
             summary: {
                 total: rows.length,
                 inserted: success.length,
@@ -116,4 +152,4 @@ async function importBarangayOfficialData(req, res) {
     }
 }
 
-module.exports = { importBarangayOfficialData };
+module.exports = { importEvacuationCenterData };

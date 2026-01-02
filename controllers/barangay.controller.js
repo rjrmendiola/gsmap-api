@@ -5,13 +5,10 @@ const importParser = require('../services/import-parser.service');
 
 const REQUIRED_FIELDS = ['name', 'latitude', 'longitude'];
 
-// For Future Update: Dynamically get municipality ID
+// TODO: Dynamically get municipality ID
 const MUNICIPALITY_ID = 1;
 
 async function importBarangayData(req, res) {
-    // const municipality = await Municipality.findOne({ where: { name: 'Carigara' } });
-    // const MUNICIPALITY_ID = municipality.id;
-
     if (!db || !db.sequelize) {
       throw new Error('Sequelize not initialized correctly');
     }
