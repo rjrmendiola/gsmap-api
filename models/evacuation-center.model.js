@@ -15,6 +15,11 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'barangay_official_id',
         as: 'official',
       });
+
+      EvacuationCenter.hasMany(models.EvacuationCenterImage, {
+        foreignKey: 'evacuation_center_id',
+        as: 'evacuationCenterImages',
+      });
     }
   }
   EvacuationCenter.init({

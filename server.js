@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 
 const authRoutes = require('./routes/authRoutes');
 const barangayRoutes = require('./routes/barangayRoutes');
@@ -42,6 +43,9 @@ app.use('/api/auth', authRoutes);
 // app.use('/api/barangayweathers', barangayWeatherRoutes);
 
 app.use('/api/weather', weatherRoutes);
+
+// Serve uploaded images
+app.use('/uploads/evacuation-centers', express.static(path.join(__dirname, 'uploads/evacuation-centers')));
 
 // Start the server
 app.listen(PORT, () => {

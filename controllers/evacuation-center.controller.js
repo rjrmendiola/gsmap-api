@@ -1,13 +1,17 @@
 const db = require('../models');
 const { Barangay, BarangayOfficial } = require('../models');
 const importParser = require('../services/import-parser.service');
+const { EvacuationCenter, EvacuationCenterImage } = require('../models');
+const fs = require('fs');
+const path = require('path');
+const { get } = require('http');
 
 const REQUIRED_FIELDS = ['name', 'barangay', 'latitude', 'longitude', 'venue'];
 
 // TODO: Dynamically get municipality ID
 const MUNICIPALITY_ID = 1;
 
-async function importEvacuationCenterData(req, res) {
+async function importData(req, res) {
 
     if (!db || !db.sequelize) {
       throw new Error('Sequelize not initialized correctly');
@@ -152,4 +156,122 @@ async function importEvacuationCenterData(req, res) {
     }
 }
 
-module.exports = { importEvacuationCenterData };
+// Upload evacuation center image
+async function uploadImage(req, res) {
+    try {
+        if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+
+        const imagePath = `/assets/evacuation-centers/${req.file.filename}`;
+
+        const image = await EvacuationCenterImage.create({
+            evacuation_center_id: req.body.evacuation_center_id,
+            image_path: imagePath,
+            order_index: 0
+        });
+
+        res.json({ success: true, image });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
+// Upload evacuation center multiple images
+async function uploadImages(req, res) {
+    try {
+        const { evacuation_center_id } = req.params;
+
+        if (!req.files || !req.files.length) {
+            return res.status(400).json({ message: 'No files uploaded' });
+        }
+
+        const images = req.files.map(file => ({
+            evacuation_center_id,
+            image_path: `evacuation-centers/${evacuation_center_id}/${file.filename}`,
+            is_primary: false
+        }));
+
+        await EvacuationCenterImage.bulkCreate(images);
+
+        // const hasPrimary = await EvacuationCenterImage.findOne({
+        //     where: { evacuation_center_id, is_primary: true }
+        // });
+
+        // if (!hasPrimary && images.length) {
+        //     await EvacuationCenterImage.update(
+        //         { is_primary: true },
+        //         { where: { id: images[0].id } }
+        //     );
+        // }
+
+        res.status(201).json({
+            message: 'Images uploaded successfully',
+            count: images.length
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Upload failed' });
+    }
+}
+
+// Get all images for an evacuation center
+async function getImages(req, res) {
+    try {
+        const images = await EvacuationCenterImage.findAll({
+            where: { evacuation_center_id: req.params.evacuation_center_id },
+            order: [['order_index', 'ASC']]
+        });
+        res.json(images);
+
+        // const { evacuation_center_id } = req.params;
+
+        // const images = await EvacuationCenterImage.findAll({
+        //     where: { evacuation_center_id },
+        //     include: [
+        //         {
+        //         model: EvacuationCenter,
+        //         attributes: ['id', 'name']
+        //         }
+        //     ],
+        //     order: [['is_primary', 'DESC'], ['created_at', 'ASC']]
+        // });
+
+        // res.json(images);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
+async function deleteImage(req, res) {
+    try {
+        const image = await EvacuationCenterImage.findByPk(req.params.id);
+        if (!image) return res.status(404).json({ error: 'Image not found' });
+
+        // Delete file from disk
+        const filePath = path.join(__dirname, '../uploads/evacuation-centers', path.basename(image.image_path));
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+
+        await image.destroy();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
+async function setPrimaryImage(req, res) {
+    try {
+        const imageId = req.body.image_id;
+        const image = await EvacuationCenterImage.findByPk(imageId);
+        if (!image) return res.status(404).json({ error: 'Image not found' });
+        await EvacuationCenterImage.update(
+            { is_primary: false },
+            { where: { evacuation_center_id: image.evacuation_center_id } }
+        );
+        image.is_primary = true;
+        await image.save();
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+}
+
+module.exports = { importData, uploadImage, uploadImages, getImages, deleteImage, setPrimaryImage };

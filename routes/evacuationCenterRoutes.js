@@ -3,8 +3,8 @@ const router = express.Router();
 const pool = require('../db');
 const { EvacuationCenter, BarangayOfficial } = require('../models');
 const { Op } = require('sequelize');
-const { dataUpload } = require('../config/multer.config');
-const { importEvacuationCenterData } = require('../controllers/evacuation-center.controller');
+const { dataUpload, imageUpload } = require('../config/multer.config');
+const { importData, uploadImage, uploadImages, getImages, deleteImage, setPrimaryImage } = require('../controllers/evacuation-center.controller');
 
 // Get all evacuation centers
 router.get('/', async (req, res) => {
@@ -99,6 +99,42 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-router.post('/import', dataUpload.single('file'), importEvacuationCenterData);
+// Import evacuation center data from CSV/Excel file
+router.post('/import', dataUpload.single('file'), importData);
+
+// Set a primary image for an evacuation center
+router.post('/:evacuation_center_id/set-primary', setPrimaryImage);
+
+// Upload evacuation center image
+// router.post('/upload-image', imageUpload.single('file'), uploadImage);
+router.post('/:evacuation_center_id/images', imageUpload.array('images', 10), uploadImages);
+
+// Get all images for an evacuation center
+router.get('/:evacuation_center_id/images', getImages);
+
+// Delete an evacuation center image
+router.delete('/image/:id', deleteImage);
+
+// Get a single evacuation center by ID
+router.get('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    // const [rows] = await pool.query('SELECT * FROM evacuationcenters WHERE id = ?', [id]);
+    // if (rows.length === 0) {
+    //   return res.status(404).json({ error: 'Evacuation center not found' });
+    // }
+    const center = await EvacuationCenter.findByPk(id, {
+      include: [
+        { model: BarangayOfficial, as: 'official', attributes: ['id', 'name', 'position'] }
+      ]
+    });
+    if (!center) {
+      return res.status(404).json({ error: 'Evacuation center not found' });
+    }
+    res.json(center);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 module.exports = router;
