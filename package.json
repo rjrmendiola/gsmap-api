@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "build": "cp config/config.json.dist config/config.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -23,7 +22,7 @@
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.30.1",
     "multer": "^2.0.2",
-    "mysql2": "^3.12.0",
+    "mysql2": "^3.16.0",
     "papaparse": "^5.5.3",
     "sequelize": "^6.37.7",
     "slugify": "^1.6.6",
