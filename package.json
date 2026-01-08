@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all",
+    "postinstall": "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@types/multer": "^2.0.0",
-    "dotenv": "^16.5.0"
+    "dotenv": "^16.5.0",
+    "sequelize-cli": "^6.6.5"
   }
 }
