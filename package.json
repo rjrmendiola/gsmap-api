@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "build": "cp config/config.json.dist config/config.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
