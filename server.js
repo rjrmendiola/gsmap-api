@@ -48,6 +48,9 @@ app.use('/api/weather', weatherRoutes);
 app.use('/uploads/evacuation-centers', express.static(path.join(__dirname, 'uploads/evacuation-centers')));
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// app.listen(PORT, () => {
+//   console.log(`Server running on http://localhost:${PORT}`);
+// });
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`API running on ${PORT}`);
 });
