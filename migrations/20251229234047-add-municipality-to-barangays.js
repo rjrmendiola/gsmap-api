@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.addColumn('Barangays', 'municipality_id', {
+    await queryInterface.addColumn('barangays', 'municipality_id', {
       type: Sequelize.INTEGER,
       allowNull: true, // Allow nulls initially since existing records won't have this value
       // references: {
@@ -17,6 +17,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.removeColumn('Barangays', 'municipality_id');
+    await queryInterface.removeColumn('barangays', 'municipality_id');
   }
 };
