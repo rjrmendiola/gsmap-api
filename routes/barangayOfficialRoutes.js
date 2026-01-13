@@ -23,7 +23,15 @@ router.get('/', async (req, res) => {
 
     if (all === 'true') {
       // return all barangay officials without pagination
+      const { Barangay } = require('../models');
       const barangayofficials = await BarangayOfficial.findAll({
+        include: [
+          {
+            model: Barangay,
+            as: 'barangay',
+            attributes: ['id', 'name', 'slug'],
+          }
+        ],
         where,
         order: [['name', 'ASC'], ['createdAt', 'DESC']],
       });

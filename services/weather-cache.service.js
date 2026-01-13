@@ -29,7 +29,34 @@ async function getSnapshot(barangayId) {
   });
 }
 
+async function getWeatherForAllBarangays() {
+  const { Barangay } = require('../models');
+
+  // Get all barangays
+  const barangays = await Barangay.findAll();
+
+  // Get latest weather snapshot for each barangay
+  const weatherData = {};
+
+  for (const barangay of barangays) {
+    const snapshot = await WeatherSnapshot.findOne({
+      where: { barangay_id: barangay.id },
+      order: [['fetched_at', 'DESC']]
+    });
+
+    if (snapshot && snapshot.payload) {
+      // Payload is already JSON from Sequelize
+      const data = snapshot.payload;
+      weatherData[barangay.name] = data;
+      weatherData[barangay.slug] = data;
+    }
+  }
+
+  return weatherData;
+}
+
 module.exports = {
   isFresh,
-  getSnapshot
+  getSnapshot,
+  getWeatherForAllBarangays
 };

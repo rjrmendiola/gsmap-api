@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-const { EvacuationCenter, BarangayOfficial } = require('../models');
+const { EvacuationCenter, BarangayOfficial,Barangay } = require('../models');
 const { Op } = require('sequelize');
 const { dataUpload, imageUpload } = require('../config/multer.config');
 const { importData, uploadImage, uploadImages, getImages, deleteImage, setPrimaryImage } = require('../controllers/evacuation-center.controller');
@@ -30,6 +30,11 @@ router.get('/', async (req, res) => {
             model: BarangayOfficial,
             as: 'official',
             attributes: ['id', 'name', 'position'],
+          },
+          {
+            model : Barangay,
+            as : 'barangay',
+            attributes : ['id','name']
           }
         ],
         where,

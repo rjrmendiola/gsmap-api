@@ -16,7 +16,10 @@ module.exports = (sequelize, DataTypes) => {
     barangay_id: DataTypes.INTEGER,
     area: DataTypes.DECIMAL(10, 4),
     population_density: DataTypes.DECIMAL(10, 2),
-    livelihood: DataTypes.STRING
+    livelihood: DataTypes.STRING,
+    population: DataTypes.INTEGER,
+    max_slope: DataTypes.DECIMAL(12, 8),
+    mean_slope: DataTypes.DECIMAL(12, 8),
   }, {
     sequelize,
     modelName: 'BarangayProfile',
