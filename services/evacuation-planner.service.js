@@ -85,7 +85,7 @@ class EvacuationPlannerService {
   async createBarangayEvacuationPlan(barangay, alert) {
     const profile = barangay.barangayProfile;
     
-    const population = profile ? parseInt(profile.population) || 1000 : 1000;
+    const population = profile ? parseInt(profile.population_density) || 1000 : 1000;
 
     // Estimate evacuees based on risk level and affected area
     const evacuationRate = this.getEvacuationRate(alert.alertLevel.level);

@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
           {
             model: BarangayProfile,
             as: 'barangayProfile',
-            attributes: ['area', 'population_density', 'population', 'livelihood'],
+            attributes: ['area', 'population_density', 'livelihood'],
           }
         ],
         where,
