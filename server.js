@@ -9,6 +9,7 @@ const path = require('path');
 
 const authRoutes = require('./routes/authRoutes');
 const barangayRoutes = require('./routes/barangayRoutes');
+const barangayProfileRoutes = require('./routes/barangayProfileRoutes');
 const barangayOfficialRoutes = require('./routes/barangayOfficialRoutes');
 const evacuationCenterRoutes = require('./routes/evacuationCenterRoutes');
 const hazardRiskAssessmentRoutes = require('./routes/hazardRickAssessmentRoutes');
@@ -37,6 +38,7 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/api/barangays', barangayRoutes);
+app.use('/api/barangayprofiles', barangayProfileRoutes);
 app.use('/api/barangayofficials', barangayOfficialRoutes);
 app.use('/api/evacuationcenters', evacuationCenterRoutes);
 app.use('/api/hazardriskAssessments', hazardRiskAssessmentRoutes);
