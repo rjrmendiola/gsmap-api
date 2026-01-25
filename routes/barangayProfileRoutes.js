@@ -59,9 +59,13 @@ router.get('/', async (req, res) => {
 
 // Add a new barangay profile
 router.post('/', async (req, res) => {
-  const { barangay_id, area, population_density, livelihood } = req.body;
+  const { barangay_id, area, population, livelihood, max_slope, mean_slope } = req.body;
   try {
-    const barangayProfile = await BarangayProfile.create({ barangay_id, area, population_density, livelihood });
+    const barangayProfile = await BarangayProfile.findByPk(barangay_id);
+    if (barangayProfile) return res.status(409).json({ error: 'Duplicate entries' });
+    
+    const population_density = population / area;
+    barangayProfile = await BarangayProfile.create({ barangay_id, area, population_density, livelihood, population, max_slope, mean_slope });
     res.status(201).json(barangayProfile);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -71,7 +75,7 @@ router.post('/', async (req, res) => {
 // Update a barangay profile
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
-  const { barangay_name, area, population_density, livelihood } = req.body;
+  const { barangay_id, area, population, livelihood, max_slope, mean_slope } = req.body;
   try {
     const barangayProfile = await BarangayProfile.findByPk(req.params.id);
     if (!barangayProfile) return res.status(404).json({ error: 'Not found' });
